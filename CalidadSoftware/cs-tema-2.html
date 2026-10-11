@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test CS Tema 2 · Técnicas de revisión</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="CS · Tema 2 · Test">
+<main class="wrap">
+<div class="page-head">
+<span class="eyebrow">Calidad de Software · Tema 2</span>
+<h1>Test: Técnicas de revisión</h1>
+<p class="lead">82 preguntas basadas en los apuntes v1.0, con corrección inmediata, explicaciones, opciones barajadas y progreso guardado en este navegador.</p>
+<div class="actions-row"><a class="btn" href="cs-tema-2-resumen.html">Ver el resumen del tema</a></div>
+</div>
+<div id="app"></div>
+<footer class="page-foot">Basado en «CS Tema 2 – Técnicas de Revisión Completo v1.0». Test de autoevaluación, no examen oficial.</footer>
+</main>
+<script>
+window.TEST = {
+  "id": "cs-tema-2",
+  "cats": [
+    "2.0 El proceso de revisión",
+    "2.1 Métricas y flujo de valor",
+    "2.2 Pull Requests y comunicación",
+    "2.3 IA y validación de alucinaciones",
+    "2.4 SAST, SCA y cadena de suministro",
+    "2.5 Revisión estructural y métricas",
+    "2.5 Código limpio, smells y SOLID"
+  ],
+  "qs": [
+    {
+      "cat": 0,
+      "t": "¿Cuál es el propósito principal de una revisión técnica?",
+      "o": [
+        "Detectar problemas pronto y evitar su propagación",
+        "Demostrar que nunca habrá defectos",
+        "Medir cuántas líneas escribe cada persona",
+        "Sustituir todos los tests"
+      ],
+      "e": "Las revisiones actúan como filtros tempranos; no garantizan ausencia total de defectos."
+    },
+    {
+      "cat": 0,
+      "t": "Según la terminología de los apuntes, un problema que se propaga de modelado a construcción es:",
+      "o": [
+        "Un defecto",
+        "Siempre una mejora",
+        "Un error solo si llega a producción",
+        "Una métrica de flujo"
+      ],
+      "e": "El tema llama defecto también al problema propagado entre actividades estructurales."
+    },
+    {
+      "cat": 0,
+      "t": "¿Qué orden corresponde al proceso clásico de revisión?",
+      "o": [
+        "Planificar, preparar, revisar, registrar, corregir y cerrar",
+        "Preparar, cerrar, corregir, registrar, revisar y planificar",
+        "Revisar, planificar, cerrar, registrar, preparar y corregir",
+        "Registrar, desplegar, planificar, preparar, cerrar y revisar"
+      ],
+      "e": "Las seis fases de Fagan se mantienen en el ciclo moderno del PR."
+    },
+    {
+      "cat": 0,
+      "t": "Antes de examinar las líneas, el revisor debe:",
+      "o": [
+        "Entender intención, requisitos y criterios de aceptación",
+        "Aprobar si el autor tiene experiencia",
+        "Corregir primero todo el formato",
+        "Reescribir la funcionalidad"
+      ],
+      "e": "La preparación del revisor evita evaluar código sin contexto."
+    },
+    {
+      "cat": 0,
+      "t": "Después de corregir un hallazgo, ¿qué hay que comprobar?",
+      "o": [
+        "Que se resolvió y no introdujo regresiones",
+        "Solo que se cerró el comentario",
+        "Solo que cambió el número de líneas",
+        "Que el autor abrió otra rama"
+      ],
+      "e": "Corrección y seguimiento incluyen reejecutar comprobaciones y revisar efectos colaterales."
+    },
+    {
+      "cat": 0,
+      "t": "¿Cuándo termina necesariamente el cierre de una revisión moderna?",
+      "o": [
+        "Puede incluir verificación del despliegue y observación posterior",
+        "Siempre al aprobar el PR",
+        "Siempre al primer commit",
+        "Antes de ejecutar el CI"
+      ],
+      "e": "El cierre puede ir más allá del merge según criticidad."
+    },
+    {
+      "cat": 0,
+      "t": "Un ticket sin criterios de aceptación apunta a un fallo de planificación:",
+      "o": [
+        "Del ticket en el refinamiento",
+        "Del formato de comentarios",
+        "De la firma del artefacto",
+        "De la métrica de duplicación"
+      ],
+      "e": "El segundo nivel acuerda criterios, alcance y riesgos funcionales."
+    },
+    {
+      "cat": 0,
+      "t": "¿Qué nivel decide los especialistas que auditarán un cambio?",
+      "o": [
+        "Planificación de la revisión",
+        "Planificación de producto",
+        "Registro de defectos",
+        "Cierre"
+      ],
+      "e": "La asignación de Code Owners y expertos pertenece al quinto nivel."
+    },
+    {
+      "cat": 1,
+      "t": "En estos apuntes, el Lead Time completo empieza:",
+      "o": [
+        "Cuando cliente o Product Owner solicita la funcionalidad",
+        "En el primer commit",
+        "Al abrir el PR",
+        "Al aprobar el merge"
+      ],
+      "e": "Incluye backlog, priorización, desarrollo y entrega en producción."
+    },
+    {
+      "cat": 1,
+      "t": "En estos apuntes, el Cycle Time va desde:",
+      "o": [
+        "El primer commit hasta el merge y despliegue",
+        "La petición del cliente hasta el refinamiento",
+        "La apertura del PR hasta su primera lectura exclusivamente",
+        "La aprobación hasta la eliminación de la rama"
+      ],
+      "e": "La definición temporal usada en el tema incluye desarrollo y despliegue."
+    },
+    {
+      "cat": 1,
+      "t": "Cycle Time de 3 días con 48 h de espera en revisión: ¿qué proporción se espera?",
+      "o": [
+        "Aproximadamente el 67 %",
+        "El 33 %",
+        "El 48 %",
+        "El 16 %"
+      ],
+      "e": "48/72 × 100 = 66,7 %. Conviene descomponer el ciclo para hallar el cuello de botella."
+    },
+    {
+      "cat": 1,
+      "t": "¿Qué expresa L = λ · W?",
+      "o": [
+        "Trabajo medio en el sistema = tasa media × permanencia media",
+        "Latencia = líneas × complejidad",
+        "Lead Time = rechazo × tamaño del PR",
+        "Número de tests = despliegues × errores"
+      ],
+      "e": "La ley de Little relaciona WIP, tasa y tiempo en un sistema estable."
+    },
+    {
+      "cat": 1,
+      "t": "Con 8 PRs de media y una tasa de 2 PRs/día, la permanencia media es:",
+      "o": [
+        "4 días",
+        "16 días",
+        "0,25 días",
+        "6 días"
+      ],
+      "e": "W = L/λ = 8/2 = 4 días, usando la misma frontera del sistema."
+    },
+    {
+      "cat": 1,
+      "t": "Si la tasa permanece constante, ¿cómo reducir el tiempo medio según Little?",
+      "o": [
+        "Reduciendo el trabajo en curso",
+        "Abriendo más PRs simultáneamente",
+        "Pidiendo aprobar sin leer",
+        "Añadiendo métricas sin cambiar el flujo"
+      ],
+      "e": "A tasa constante, reducir L reduce W; limitar WIP ayuda a terminar trabajo."
+    },
+    {
+      "cat": 1,
+      "t": "¿Qué es rubber-stamping?",
+      "o": [
+        "Aprobar mecánicamente sin revisión real",
+        "Revisar automáticamente las dependencias",
+        "Firmar un SBOM",
+        "Dividir un cambio grande en PRs"
+      ],
+      "e": "Puede aparecer al presionar para reducir tiempos sin vigilar calidad."
+    },
+    {
+      "cat": 1,
+      "t": "¿Qué enseña la ley de Goodhart en este contexto?",
+      "o": [
+        "Una métrica convertida en objetivo puede dejar de representar bien la realidad",
+        "Toda métrica mejora por medirla",
+        "Cycle Time y Lead Time siempre coinciden",
+        "Más PRs abiertos reducen siempre la espera"
+      ],
+      "e": "Optimizar una cifra aislada invita a manipularla sacrificando el resultado real."
+    },
+    {
+      "cat": 1,
+      "t": "¿Qué recomendación de tamaño de PR aparece en el tema?",
+      "o": [
+        "Unas 200–400 líneas modificadas, con exclusiones indicadas",
+        "Más de 2.000 líneas para amortizar cada revisión",
+        "Un límite universal de 10 líneas",
+        "El tamaño nunca afecta a la revisión"
+      ],
+      "e": "Es una recomendación orientativa para preservar atención, no una ley universal."
+    },
+    {
+      "cat": 1,
+      "t": "De 20 PRs revisados, 5 reciben cambios significativos. La tasa de rechazo es:",
+      "o": [
+        "25 %",
+        "5 %",
+        "20 %",
+        "75 %"
+      ],
+      "e": "5/20 × 100 = 25 %. El denominador son los PRs revisados."
+    },
+    {
+      "cat": 1,
+      "t": "¿Qué distingue rechazo de PRs y Change Failure Rate?",
+      "o": [
+        "Miden cambios pedidos en revisión y fallos de despliegues, respectivamente",
+        "Ambos cuentan solo comentarios de estilo",
+        "Ambos usan siempre PRs como denominador",
+        "El segundo mide líneas duplicadas"
+      ],
+      "e": "El PDF los agrupa, pero son eventos y poblaciones distintos."
+    },
+    {
+      "cat": 1,
+      "t": "Se alcanza el límite WIP de revisión. ¿Qué actuación encaja con el tema?",
+      "o": [
+        "Revisar y terminar antes de iniciar más trabajo",
+        "Abrir otra rama por persona",
+        "Suprimir los tests",
+        "Aumentar indefinidamente la cola"
+      ],
+      "e": "El objetivo es desbloquear el flujo, no acumular trabajo sin terminar."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué secuencia sigue GitHub Flow en los apuntes?",
+      "o": [
+        "Rama, commits, PR, revisión, merge y despliegue",
+        "Despliegue, rama, merge, PR y revisión",
+        "Merge, PR, commits, revisión y rama",
+        "PR, despliegue, revisión y commits"
+      ],
+      "e": "Es el flujo simple de ramas efímeras descrito en el tema."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué debe explicar una descripción de PR útil?",
+      "o": [
+        "Qué cambia, por qué, cómo probarlo y evidencia visual si aplica",
+        "Solo el número de líneas",
+        "Solo los nombres del autor y revisor",
+        "Únicamente el listado automático de archivos"
+      ],
+      "e": "Permite revisar de forma asíncrona sin adivinar el contexto."
+    },
+    {
+      "cat": 2,
+      "t": "¿Por qué una aclaración puede costar un día en un equipo global?",
+      "o": [
+        "Por esperar la disponibilidad del interlocutor en otra zona horaria",
+        "Porque cada comentario tarda un día en transmitirse",
+        "Porque Git exige esperar 24 horas",
+        "Porque un PR no admite respuestas"
+      ],
+      "e": "El coste principal es el round-trip humano, no leer el mensaje."
+    },
+    {
+      "cat": 2,
+      "t": "¿Para qué se abre pronto un Draft PR?",
+      "o": [
+        "Validar el enfoque antes de invertir en detalles",
+        "Autorizar un merge inmediato sin pruebas",
+        "Ocultar el código hasta terminar",
+        "Evitar discutir arquitectura"
+      ],
+      "e": "Funciona como RFC vivo y reduce el coste de corregir una dirección equivocada."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué es un PR huérfano?",
+      "o": [
+        "Un PR sin contexto útil ni vínculo con la necesidad original",
+        "Todo PR de un contribuidor nuevo",
+        "Un PR con varias categorías de test",
+        "Un PR marcado Draft"
+      ],
+      "e": "La ausencia de qué y por qué fuerza al revisor a reconstruir la intención."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué versión corresponde a fix: desde 2.1.0, sin ruptura de compatibilidad?",
+      "o": [
+        "2.1.1",
+        "2.2.0",
+        "3.0.0",
+        "1.1.0"
+      ],
+      "e": "fix se asocia a un incremento PATCH."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué indica feat!: en Conventional Commits?",
+      "o": [
+        "Un cambio incompatible",
+        "Una corrección exclusivamente de formato",
+        "Un commit sin ámbito",
+        "Una sugerencia opcional del revisor"
+      ],
+      "e": "El signo ! o el pie BREAKING CHANGE señala ruptura y un incremento MAJOR."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué mensaje sigue el formato con ámbito opcional?",
+      "o": [
+        "feat(parser): add arrays",
+        "parser feat add arrays",
+        "feature = parser arrays",
+        "add arrays (feat parser)"
+      ],
+      "e": "El ámbito va entre paréntesis tras el tipo y antes de los dos puntos."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué decoración impide aceptar el cambio hasta resolver un punto?",
+      "o": [
+        "(blocking)",
+        "(non-blocking)",
+        "(if-minor)",
+        "(praise)"
+      ],
+      "e": "La decoración expresa explícitamente si bloquea el merge."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué significa suggestion (if-minor)?",
+      "o": [
+        "Resolver la mejora si el cambio necesario es trivial",
+        "Corregir siempre antes de merge",
+        "Ignorar cualquier riesgo de seguridad",
+        "Aumentar la versión MINOR automáticamente"
+      ],
+      "e": "Las decoraciones de comentarios no son tipos de versionado."
+    },
+    {
+      "cat": 2,
+      "t": "¿Qué describe bikeshedding?",
+      "o": [
+        "Debatir detalles triviales mientras se ignoran problemas importantes",
+        "Actualizar dependencias de forma automática",
+        "Compartir conocimiento del dominio",
+        "Firmar artefactos en el CI"
+      ],
+      "e": "Automatizar estilo deja atención disponible para corrección y seguridad."
+    },
+    {
+      "cat": 2,
+      "t": "Un Bus Factor de 1 significa:",
+      "o": [
+        "Que una sola pérdida de conocimiento puede comprometer el proyecto",
+        "Que hay un solo PR abierto",
+        "Que el equipo despliega una vez al día",
+        "Que solo una persona puede usar Git"
+      ],
+      "e": "Revisiones cruzadas y rotación ayudan a distribuir conocimiento crítico."
+    },
+    {
+      "cat": 2,
+      "t": "¿Cómo se exige la aprobación del propietario de una ruta?",
+      "o": [
+        "Combinando CODEOWNERS con reglas de protección de rama",
+        "Añadiendo un comentario con su nombre",
+        "Solo usando Conventional Commits",
+        "Nombrando la rama como main"
+      ],
+      "e": "CODEOWNERS identifica responsables; las reglas de protección hacen obligatoria su aprobación."
+    },
+    {
+      "cat": 3,
+      "t": "Un método sugerido por IA parece perfecto. ¿Cómo verificarlo?",
+      "o": [
+        "Consultar su firma en la documentación de la versión instalada",
+        "Confiar en su nombre coherente",
+        "Pedir al mismo modelo que confirme sin evidencia",
+        "Usar la documentación de cualquier versión"
+      ],
+      "e": "La plausibilidad no prueba existencia ni compatibilidad."
+    },
+    {
+      "cat": 3,
+      "t": "¿Qué es Automation Bias?",
+      "o": [
+        "Confiar en exceso en una salida por proceder de un sistema automatizado",
+        "Rechazar cualquier automatización",
+        "Un fallo de compilación",
+        "Una dependencia transitiva"
+      ],
+      "e": "El origen sofisticado de una respuesta puede reducir indebidamente el escrutinio."
+    },
+    {
+      "cat": 3,
+      "t": "Código y tests generados con el mismo supuesto erróneo pueden:",
+      "o": [
+        "Pasar todos los tests y violar el requisito",
+        "Demostrar necesariamente corrección",
+        "Detectar siempre sus propios errores",
+        "Eliminar la necesidad de revisión"
+      ],
+      "e": "Los tests tautológicos replican el error en el resultado esperado."
+    },
+    {
+      "cat": 3,
+      "t": "¿Qué exige Zero-Trust aplicado a código de IA?",
+      "o": [
+        "Verificación independiente de comportamiento y supuestos",
+        "Aceptar si el modelo es avanzado",
+        "Revisar únicamente el formato",
+        "Prohibir todos los asistentes"
+      ],
+      "e": "La herramienta ayuda, pero no constituye autoridad final sobre la corrección."
+    },
+    {
+      "cat": 3,
+      "t": "Un endpoint valida el email pero omite la edad mínima exigida. ¿Qué falla?",
+      "o": [
+        "La semántica de negocio",
+        "Solo la indentación",
+        "La definición de rama efímera",
+        "El inventario de dependencias"
+      ],
+      "e": "Compilar y validar tipos no implica cumplir reglas de dominio."
+    },
+    {
+      "cat": 3,
+      "t": "Una llamada a red solo cubre respuestas 200. ¿Qué debe buscar el revisor?",
+      "o": [
+        "Comportamiento ante timeout y fallo del servicio",
+        "Únicamente nombres más cortos",
+        "Más comentarios que repitan el código",
+        "Una clase abstracta aunque no haga falta"
+      ],
+      "e": "El sesgo de happy path omite topología defensiva y errores reales."
+    },
+    {
+      "cat": 3,
+      "t": "¿Qué significa que un mutante sobreviva?",
+      "o": [
+        "Los tests siguen pasando pese al defecto introducido",
+        "Los tests detectaron el defecto",
+        "El compilador optimizó el programa",
+        "El PR fue rechazado"
+      ],
+      "e": "La supervivencia señala que las pruebas no distinguieron el cambio evaluado."
+    },
+    {
+      "cat": 3,
+      "t": "Si se detectan 72 de 90 mutantes evaluados, el Mutation Score es:",
+      "o": [
+        "80 %",
+        "72 %",
+        "90 %",
+        "18 %"
+      ],
+      "e": "72/90 × 100 = 80 %. No es cobertura de líneas."
+    },
+    {
+      "cat": 3,
+      "t": "¿Por qué una cobertura de líneas del 100 % no demuestra tests sólidos?",
+      "o": [
+        "Ejecutar una línea no implica comprobar correctamente su resultado",
+        "Porque toda cobertura es aleatoria",
+        "Porque solo importa el formato de tests",
+        "Porque las pruebas de mutación no ejecutan código"
+      ],
+      "e": "Pueden recorrerse todas las líneas con aserciones débiles o expectativas incorrectas."
+    },
+    {
+      "cat": 3,
+      "t": "¿Qué papel asignan los apuntes a los agentes de revisión IA?",
+      "o": [
+        "Primer filtro con decisión final humana",
+        "Único aprobador con auto-merge irrestricto",
+        "Sustituto de los criterios de aceptación",
+        "Garantía de ausencia de vulnerabilidades"
+      ],
+      "e": "Pueden resumir y detectar patrones, pero el contexto y la responsabilidad siguen requiriendo criterio humano."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué distingue SAST de SCA?",
+      "o": [
+        "SAST analiza código; SCA examina componentes de terceros",
+        "SAST ejecuta producción y SCA solo formatea",
+        "Ambos se limitan a dependencias directas",
+        "SCA verifica únicamente nombres de variables"
+      ],
+      "e": "Se complementan: código propio y composición del producto."
+    },
+    {
+      "cat": 4,
+      "t": "En Taint Analysis, Source y Sink representan:",
+      "o": [
+        "Entrada no confiable y destino sensible",
+        "Rama principal y rama temporal",
+        "Autor y revisor",
+        "Versión mayor y versión menor"
+      ],
+      "e": "Se sigue el flujo de datos y se revisan las defensas en su recorrido."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué medida separa instrucciones SQL y datos del usuario?",
+      "o": [
+        "Consultas parametrizadas",
+        "Concatenar entradas después de borrar comillas",
+        "Cambiar el nombre del formulario",
+        "Añadir comentarios al SQL"
+      ],
+      "e": "La parametrización evita interpretar el valor del parámetro como parte de la instrucción."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué es una dependencia transitiva?",
+      "o": [
+        "La que llega porque otra dependencia la necesita",
+        "Toda librería instalada explícitamente",
+        "Una función del código propio",
+        "Un artefacto firmado"
+      ],
+      "e": "También forma parte de la superficie de ataque y debe incluirse en el análisis."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué aporta un identificador CVE?",
+      "o": [
+        "Una referencia pública común a una vulnerabilidad conocida",
+        "Una prueba de que la aplicación es explotable",
+        "Una firma de todo el código",
+        "Un tipo de commit"
+      ],
+      "e": "Permite identificar el mismo fallo; su explotabilidad en un producto exige contexto."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué contiene un SBOM?",
+      "o": [
+        "Inventario de componentes y versiones del software",
+        "Solo la lista de autores del PR",
+        "Solo los tests fallados",
+        "Una garantía de ausencia de malware"
+      ],
+      "e": "Es la lista de materiales; firmas y procedencia aportan evidencias adicionales."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué documenta VEX?",
+      "o": [
+        "El estado de explotabilidad de una vulnerabilidad en un producto",
+        "El tiempo que tarda un PR",
+        "El número de capas de arquitectura",
+        "La aprobación del Product Owner"
+      ],
+      "e": "Permite justificar técnicamente por qué un componente vulnerable puede no ser explotable en ese contexto."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué persigue SLSA?",
+      "o": [
+        "Reforzar y verificar la seguridad y procedencia del build",
+        "Cambiar las reglas de SemVer",
+        "Sustituir SAST por una revisión visual",
+        "Contar comentarios de código"
+      ],
+      "e": "Trata de la cadena que lleva desde el código a los artefactos construidos."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué caracteriza Keyless Signing?",
+      "o": [
+        "Identidad del pipeline y credenciales de firma efímeras",
+        "Ausencia de toda criptografía",
+        "Clave privada permanente en el repositorio",
+        "Firma manual de cada línea"
+      ],
+      "e": "Sigstore/Cosign permiten firmar sin gestionar una clave privada de firma permanente."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué pareja genera un SBOM y después busca vulnerabilidades?",
+      "o": [
+        "Syft y Grype",
+        "Git y Conventional Comments",
+        "Strategy y Builder",
+        "Ca y Ce"
+      ],
+      "e": "Syft produce el inventario; Grype lo analiza en busca de vulnerabilidades conocidas."
+    },
+    {
+      "cat": 4,
+      "t": "¿Para qué sirve Dependency-Track?",
+      "o": [
+        "Centralizar SBOMs y localizar productos afectados por CVEs",
+        "Medir solo complejidad de funciones",
+        "Sustituir las pruebas de contrato",
+        "Abrir ramas sin commits"
+      ],
+      "e": "El inventario central permite evaluar nuevos avisos sobre múltiples productos."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué hacen Dependabot y Renovate?",
+      "o": [
+        "Proponen actualizaciones de dependencias mediante PRs",
+        "Garantizan compatibilidad sin ejecutar tests",
+        "Reemplazan el SBOM por un hash",
+        "Aprueban todas las reglas de negocio"
+      ],
+      "e": "La remediación puede automatizarse, manteniendo comprobaciones de compatibilidad y riesgo."
+    },
+    {
+      "cat": 4,
+      "t": "¿Qué significa Shift-Left Security?",
+      "o": [
+        "Detectar problemas de seguridad lo antes posible",
+        "Revisar solo después de desplegar",
+        "Mover el repositorio a otro servidor",
+        "Eliminar el análisis del IDE"
+      ],
+      "e": "El tema propone controles en IDE/pre-commit y CI, antes de producción."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué pregunta distingue la revisión estructural?",
+      "o": [
+        "¿Será fácil modificar, probar y extender el diseño?",
+        "¿Cuántas personas abrieron el ticket?",
+        "¿Se publicó el CHANGELOG?",
+        "¿Tiene el PR una captura?"
+      ],
+      "e": "La funcional pregunta por cumplir el requisito; la estructural por el coste del próximo cambio."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué combinación señala un hotspot prioritario?",
+      "o": [
+        "Complejidad alta y cambios frecuentes",
+        "Pocos cambios y una captura de pantalla",
+        "Muchos comentarios praise",
+        "Un archivo generado grande sin cambios manuales"
+      ],
+      "e": "Cruzar complejidad y churn permite priorizar deuda que se paga continuamente."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué orden de pasadas recomienda el tema?",
+      "o": [
+        "Macro, meso y micro",
+        "Micro, formato y despliegue",
+        "Meso, micro y macro",
+        "Nombres, sangría y arquitectura"
+      ],
+      "e": "Primero arquitectura, después módulos/clases y finalmente funciones y nombres."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué incluye un comentario estructural útil?",
+      "o": [
+        "Síntoma, principio y propuesta de refactorización",
+        "Solo «esto está mal»",
+        "Una preferencia sin explicación",
+        "Únicamente la longitud del archivo"
+      ],
+      "e": "Da evidencia, razón y una vía de corrección revisable."
+    },
+    {
+      "cat": 5,
+      "t": "¿Cómo deben usarse los umbrales de complejidad?",
+      "o": [
+        "Como señales que requieren contexto y comparación con la base",
+        "Como órdenes automáticas de reescritura",
+        "Como objetivos individuales de productividad",
+        "Como prueba de corrección funcional"
+      ],
+      "e": "Clean as You Code mira el cambio en código nuevo; una cifra aislada no decide el diseño."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué mide Ca?",
+      "o": [
+        "Cuántos módulos dependen del módulo evaluado",
+        "De cuántos módulos depende el evaluado",
+        "Cuántas clases abstractas tiene",
+        "Cuántos tests fallan"
+      ],
+      "e": "Ca es acoplamiento aferente; Ce es eferente."
+    },
+    {
+      "cat": 5,
+      "t": "Con Ca=3 y Ce=9, ¿cuál es I?",
+      "o": [
+        "0,75",
+        "0,25",
+        "3",
+        "12"
+      ],
+      "e": "I = Ce/(Ca+Ce) = 9/12 = 0,75."
+    },
+    {
+      "cat": 5,
+      "t": "Con A=0,2 e I=0,3, ¿cuánto vale D?",
+      "o": [
+        "0,5",
+        "−0,5",
+        "1,5",
+        "0"
+      ],
+      "e": "D = valor absoluto de A+I−1 = valor absoluto de −0,5 = 0,5."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué identifica la zona de dolor?",
+      "o": [
+        "Módulo concreto y estable del que dependen muchos",
+        "Abstracciones muy inestables sin consumidores",
+        "Cualquier módulo con muchos tests",
+        "Una rama con demasiados commits"
+      ],
+      "e": "A bajo e I bajo: modificar un módulo concreto central afecta a muchos consumidores."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué significa un LCOM alto?",
+      "o": [
+        "Falta de cohesión elevada",
+        "Más estabilidad garantizada",
+        "Menor acoplamiento eferente",
+        "Cobertura de mutación alta"
+      ],
+      "e": "Métodos que comparten pocos atributos pueden indicar responsabilidades dispersas."
+    },
+    {
+      "cat": 5,
+      "t": "¿Qué señala la ley de Conway?",
+      "o": [
+        "La estructura del software tiende a reflejar la comunicación organizativa",
+        "La complejidad siempre disminuye con el tiempo",
+        "Todo PR grande es incorrecto",
+        "La inestabilidad mide fallos de red"
+      ],
+      "e": "Ayuda a entender cómo límites y responsabilidades de equipos influyen en el diseño."
+    },
+    {
+      "cat": 6,
+      "t": "Una clase calcula impuestos, guarda en SQL y envía correos. ¿Qué principio revisar primero?",
+      "o": [
+        "SRP",
+        "LSP exclusivamente",
+        "SemVer",
+        "SLSA"
+      ],
+      "e": "Tiene responsabilidades que pueden cambiar por actores distintos; separar cálculo, persistencia y notificación."
+    },
+    {
+      "cat": 6,
+      "t": "Switches sobre el mismo tipo crecen en varios archivos. ¿Qué principio alerta?",
+      "o": [
+        "OCP",
+        "ISP exclusivamente",
+        "CQS exclusivamente",
+        "Keyless Signing"
+      ],
+      "e": "El siguiente tipo obliga a modificar muchos sitios; Strategy u otro polimorfismo puede encapsular variación."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué exige LSP a una subclase?",
+      "o": [
+        "Respetar el contrato sin exigir más ni garantizar menos",
+        "Añadir siempre más precondiciones",
+        "Lanzar NotImplemented en métodos no deseados",
+        "Depender de la infraestructura concreta"
+      ],
+      "e": "La sustitución debe conservar el comportamiento esperado por los clientes del tipo base."
+    },
+    {
+      "cat": 6,
+      "t": "Una interfaz obliga a implementar métodos que no se usan. ¿Qué principio se incumple?",
+      "o": [
+        "ISP",
+        "OCP exclusivamente",
+        "Regla de Little",
+        "DRY exclusivamente"
+      ],
+      "e": "Separar interfaces específicas evita métodos vacíos y dependencias innecesarias."
+    },
+    {
+      "cat": 6,
+      "t": "El dominio crea directamente una conexión concreta a BD. ¿Qué principio revisar?",
+      "o": [
+        "DIP",
+        "Solo la regla de formato",
+        "Conventional Commits",
+        "LSP necesariamente"
+      ],
+      "e": "La regla de negocio queda acoplada a infraestructura; una abstracción puede permitir pruebas aisladas."
+    },
+    {
+      "cat": 6,
+      "t": "¿Cuál es la relación correcta entre DIP, DI y contenedor IoC?",
+      "o": [
+        "Principio, técnica y herramienta, respectivamente",
+        "Tres nombres para lo mismo",
+        "Herramienta, lenguaje y métrica",
+        "Solo DI es un principio SOLID"
+      ],
+      "e": "Inyectar dependencias no garantiza por sí solo que la dirección de dependencia respete DIP."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué distingue Divergent Change de Shotgun Surgery?",
+      "o": [
+        "Una clase cambia por muchos motivos; un cambio toca muchas clases",
+        "Ambos son exactamente métodos largos",
+        "El primero mide cobertura y el segundo duplicación",
+        "El primero siempre se soluciona añadiendo herencia"
+      ],
+      "e": "Ambos impiden cambios, pero señalan distribuciones distintas de responsabilidades."
+    },
+    {
+      "cat": 6,
+      "t": "Un método usa más datos de otra clase que de la suya. ¿Qué smell encaja?",
+      "o": [
+        "Feature Envy",
+        "Dead Code",
+        "Long Parameter List",
+        "Temporary Field"
+      ],
+      "e": "Move Method puede acercar el comportamiento a los datos y mejorar cohesión."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué propone YAGNI ante abstracciones sin necesidad real?",
+      "o": [
+        "Eliminar o posponer la generalidad especulativa",
+        "Añadir otra factoría por seguridad",
+        "Crear interfaces para cada valor",
+        "Anticipar todos los casos futuros"
+      ],
+      "e": "La flexibilidad sin consumidores añade coste; introducirla cuando exista una necesidad concreta."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué recomienda la regla de tres de los apuntes sobre variaciones?",
+      "o": [
+        "Refactorizar al tercer caso o al repetirse el switch en otro lugar",
+        "Copiar siempre exactamente tres veces sin pensar",
+        "Abstraer cualquier función desde el primer uso",
+        "Impedir añadir un tercer tipo"
+      ],
+      "e": "Es una heurística para equilibrar duplicación y abstracción prematura, no una obligación ciega."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué expresa la separación comando-consulta (CQS)?",
+      "o": [
+        "Distinguir operaciones que cambian estado de las que consultan",
+        "Usar SQL en toda función",
+        "Separar cada línea en una clase",
+        "Exigir una interfaz para cada consulta"
+      ],
+      "e": "Un getter con una escritura oculta sorprende a los clientes y dificulta pruebas."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué hacer con deuda previa que el PR no empeora y queda fuera de alcance?",
+      "o": [
+        "Registrarla en una tarea aparte",
+        "Bloquear siempre el PR hasta reescribir todo",
+        "Ocultarla sin registro",
+        "Borrar el módulo sin analizar sus clientes"
+      ],
+      "e": "La revisión debe mantener alcance y trazabilidad de mejoras pendientes."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué significa un code smell?",
+      "o": [
+        "Un síntoma de posible problema de diseño",
+        "Un bug demostrado en todos los casos",
+        "Una vulnerabilidad con CVE obligatorio",
+        "Un error sintáctico que impide compilar"
+      ],
+      "e": "Debe investigarse en contexto y asociarse a una refactorización justificada."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué refactorización encaja con una cadena a.getB().getC().getD()?",
+      "o": [
+        "Hide Delegate para reducir navegación interna",
+        "Añadir más getters públicos",
+        "Copiar la cadena en todos los clientes",
+        "Convertir cada getter en una escritura"
+      ],
+      "e": "Message Chains se relaciona con Demeter; ocultar navegación reduce acoplamiento a detalles."
+    },
+    {
+      "cat": 6,
+      "t": "¿Qué hacer si un catch vacío oculta un fallo importante?",
+      "o": [
+        "Manejar el error, añadir contexto o propagarlo",
+        "Dejarlo porque mejora el Cycle Time",
+        "Sustituirlo por un comentario praise",
+        "Clasificarlo siempre como nitpick"
+      ],
+      "e": "Tragar excepciones afecta a corrección y puede ser bloqueante, aunque parezca un detalle local."
+    }
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>
