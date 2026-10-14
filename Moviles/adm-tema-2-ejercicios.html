@@ -348,19 +348,28 @@ fun main() {
 </main>
 
 <script>
-function toggleSol(n, btn){
-  var el = document.getElementById('sol'+n);
+/** Alterna una solución y actualiza el texto y el estado accesible de su botón, si se proporciona. */
+function toggleSol(n, btn) {
+  var el = document.getElementById('sol' + n);
   var open = el.classList.toggle('show');
   if (btn) { btn.textContent = open ? 'Ocultar solución' : 'Ver solución'; btn.setAttribute('aria-expanded', open); }
 }
-function toggleAll(show){
-  document.querySelectorAll('.sol').forEach(function(d){ d.classList.toggle('show', show); });
-  document.querySelectorAll('[aria-controls^="sol"]').forEach(function(b){ b.textContent = show ? 'Ocultar solución' : 'Ver solución'; b.setAttribute('aria-expanded', show); });
+/** Muestra u oculta todas las soluciones y sincroniza sus botones de apertura. */
+function toggleAll(show) {
+  document.querySelectorAll('.sol').forEach(function (d) { d.classList.toggle('show', show); });
+  document.querySelectorAll('[aria-controls^="sol"]').forEach(function (b) { b.textContent = show ? 'Ocultar solución' : 'Ver solución'; b.setAttribute('aria-expanded', show); });
 }
-function copyCode(n, btn){
-  var t = document.getElementById('code'+n).innerText;
-  function done(ok){ if(!btn) return; var old='Copiar código'; btn.textContent = ok ? 'Copiado ✓' : 'No se pudo copiar'; setTimeout(function(){ btn.textContent = old; }, 1500); }
-  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ done(true); }, function(){ done(false); });
+/** Copia el texto del ejercicio al portapapeles e indica el resultado en el botón, si existe. */
+function copyCode(n, btn) {
+  var t = document.getElementById('code' + n).innerText;
+  /** Muestra el resultado de la copia durante 1500 milisegundos y restaura la etiqueta del botón. */
+  function done(ok) {
+    if (!btn) return;
+    var old = 'Copiar código';
+    btn.textContent = ok ? 'Copiado ✓' : 'No se pudo copiar';
+    setTimeout(function () { btn.textContent = old; }, 1500);
+  }
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { done(true); }, function () { done(false); });
   else done(false);
 }
 </script>

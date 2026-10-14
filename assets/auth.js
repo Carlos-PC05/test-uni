@@ -1,14 +1,18 @@
 /* Puerta de acceso simple para GitHub Pages (DISUASORIA, no es seguridad).
    El contenido sigue siendo público: cualquiera puede ver el código fuente
    o pedir los HTML directamente. Solo evita visitas casuales. */
+/** Restaura el acceso de la pestaña o prepara la pantalla disuasoria de contraseña. */
 (function () {
+  // --- Comprobación de acceso ---
   var KEY = "tu-gate";
   var CODE = [50, 57, 50, 48]; // contraseña en códigos de carácter
 
+  /** Comprueba si esta pestaña tiene el acceso concedido en sessionStorage. */
   function authenticated() {
     try { return sessionStorage.getItem(KEY) === "1"; } catch (e) { return false; }
   }
 
+  /** Compara la contraseña con los códigos configurados; solo actúa como barrera disuasoria. */
   function check(pw) {
     if (!pw || pw.length !== CODE.length) return false;
     for (var i = 0; i < CODE.length; i++) {
@@ -17,7 +21,9 @@
     return true;
   }
 
+  /** Programa la inserción del botón que elimina el acceso de la sesión y recarga la página. */
   function addLogoutBtn() {
+    /** Añade el control de bloqueo si la barra superior está disponible y aún no lo contiene. */
     document.addEventListener("DOMContentLoaded", function () {
       var wrap = document.querySelector(".topbar .wrap");
       if (!wrap || document.getElementById("lockBtn")) return;
@@ -26,6 +32,7 @@
       btn.className = "btn small";
       btn.type = "button";
       btn.textContent = "Bloquear";
+      /** Elimina la marca de acceso y recarga incluso si sessionStorage produce un error. */
       btn.addEventListener("click", function () {
         try { sessionStorage.removeItem(KEY); } catch (e) {}
         location.reload();
@@ -36,11 +43,14 @@
 
   if (authenticated()) { addLogoutBtn(); return; }
 
+  // --- Pantalla de acceso ---
+
   // Oculta el contenido hasta verificar (el script carga en <head>).
   var hide = document.createElement("style");
   hide.textContent = "body{visibility:hidden}";
   (document.head || document.documentElement).appendChild(hide);
 
+  /** Muestra el formulario de acceso y oculta el resto del contenido hasta aceptar la contraseña. */
   function gate() {
     var ov = document.createElement("div");
     ov.id = "gate";
@@ -61,6 +71,7 @@
     var form = document.getElementById("gateForm");
     var pw = document.getElementById("gatePw");
     var err = document.getElementById("gateErr");
+    /** Guarda el acceso y recarga si la clave coincide; en caso contrario permite otro intento. */
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (check(pw.value)) {
@@ -78,6 +89,7 @@
     pw.focus();
   }
 
+  // --- Estilos y montaje del formulario ---
   var css = document.createElement("style");
   css.textContent =
     "#gate{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;" +

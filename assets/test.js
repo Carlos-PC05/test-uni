@@ -3,9 +3,11 @@
    Uso: definir window.TEST = { id, cats:[...], qs:[{cat, t, o:[...], e}] }
    IMPORTANTE: en los datos, la opción CORRECTA es la primera (o[0]) salvo que la
    pregunta indique su índice con c. Con TEST.shuffle = false no se barajan.
-   El motor baraja las opciones al mostrarlas, así que en pantalla nunca
-   está en la misma posición. El progreso se guarda en el navegador.
+   Salvo que shuffle sea false, el motor baraja las opciones al crear el estado
+   o repetir preguntas; una opción puede volver a ocupar la misma posición.
+   El progreso se guarda en el navegador.
    ========================================================== */
+/** Inicia el motor si existen los datos TEST y el contenedor app. */
 (function () {
   var T = window.TEST;
   var app = document.getElementById("app");
@@ -17,29 +19,53 @@
   var LET = ["a", "b", "c", "d", "e", "f"];
   var store = window.TUStore || { get: function () { return null; }, set: function () {}, del: function () {} };
 
+  // --- Orden de preguntas y opciones ---
+
+  /** Baraja el array recibido mediante Fisher–Yates, lo modifica y devuelve la misma referencia. */
   function shuffle(a) {
-    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
     return a;
   }
-  function range(n) { var r = []; for (var i = 0; i < n; i++) r.push(i); return r; }
-  function freshPerm(i) { var r = range(T.qs[i].o.length); return T.shuffle === false ? r : shuffle(r); }
-  /* Índice de la opción correcta: por defecto 0; se puede fijar con q.c (p. ej. exámenes reales sin barajar). */
-  function cor(i) { var c = T.qs[i].c; return typeof c === "number" ? c : 0; }
+  /** Construye los índices desde cero hasta n, sin incluir n. */
+  function range(n) {
+    var r = [];
+    for (var i = 0; i < n; i++) r.push(i);
+    return r;
+  }
+  /** Genera el orden de opciones de una pregunta y respeta TEST.shuffle cuando vale false. */
+  function freshPerm(i) {
+    var r = range(T.qs[i].o.length);
+    return T.shuffle === false ? r : shuffle(r);
+  }
+  /** Devuelve el índice original de la respuesta correcta, usando cero cuando no se especifica c. */
+  function cor(i) {
+    var c = T.qs[i].c;
+    return typeof c === "number" ? c : 0;
+  }
 
   /* ---------- Estado ---------- */
   var st = store.get(KEY);
+  /** Comprueba la versión del estado y que exista una permutación por pregunta; no valida su contenido. */
   function valid(s) { return s && s.v === 2 && s.perm && s.perm.length === N; }
   if (!valid(st)) {
     st = { v: 2, perm: T.qs.map(function (q, i) { return freshPerm(i); }), ans: {}, random: false, qorder: null, filter: "all" };
   }
+  /** Guarda el estado del test y el resumen de progreso que consulta la portada. */
   function save() {
     store.set(KEY, st);
     var c = counts();
     store.set(SUM, { done: c.done, ok: c.ok, total: N });
   }
 
+  /** Cuenta respuestas, aciertos y fallos, con un desglose de respuestas y aciertos por categoría. */
   function counts() {
     var done = 0, ok = 0, perCat = T.cats.map(function () { return { done: 0, ok: 0, total: 0 }; });
+    /** Acumula el total de la categoría y contabiliza su respuesta si existe. */
     T.qs.forEach(function (q, i) {
       perCat[q.cat].total++;
       if (st.ans[i] !== undefined) {
@@ -51,12 +77,15 @@
   }
 
   /* ---------- Render ---------- */
+  /** Genera el HTML de una pregunta siguiendo su permutación de opciones y su posición visible.
+   * Los enunciados y opciones se insertan como HTML y deben proceder de contenido de confianza. */
   function qCard(i, pos) {
     var q = T.qs[i];
     var html = '<article class="q" id="q' + i + '" data-i="' + i + '">';
     html += '<div class="q-top"><span>Pregunta ' + pos + " de " + N + '</span><span class="verdict" aria-live="polite"></span></div>';
     html += '<div class="q-text" id="qt' + i + '">' + q.t + "</div>";
     html += '<fieldset class="opts" aria-labelledby="qt' + i + '">';
+    /** Genera una opción visible conservando su índice original para la corrección. */
     st.perm[i].forEach(function (orig, k) {
       html += '<label class="opt" data-o="' + orig + '">' +
         '<input type="radio" name="r' + i + '" value="' + orig + '">' +
@@ -68,6 +97,7 @@
     return html;
   }
 
+  /** Reconstruye el test, restaura las respuestas y conecta los controles, filtros y estadísticas. */
   function render() {
     var html = "";
     html += '<div class="test-bar"><div class="row">' +
@@ -94,8 +124,10 @@
       html += '<nav class="toc" aria-label="Secciones">';
       T.cats.forEach(function (c, ci) { html += '<a href="#cat' + ci + '">' + c + "</a>"; });
       html += "</nav>";
+      /** Construye la sección y numera las preguntas de la categoría. */
       T.cats.forEach(function (c, ci) {
         html += '<section class="cat" id="cat' + ci + '" data-cat="' + ci + '"><h2 class="cat-title">' + c + ' <span class="cat-score" id="cs' + ci + '"></span></h2>';
+        /** Añade solo las preguntas que pertenecen a esta categoría. */
         T.qs.forEach(function (q, i) { if (q.cat === ci) { pos++; html += qCard(i, pos); } });
         html += "</section>";
       });
@@ -112,6 +144,7 @@
     update();
   }
 
+  /** Bloquea una pregunta respondida y muestra la corrección y la explicación de confianza del test. */
   function paint(i) {
     var card = document.getElementById("q" + i);
     if (!card) return;
@@ -121,6 +154,7 @@
     card.classList.add(ok ? "correct" : "wrong");
     card.querySelector(".verdict").textContent = ok ? "✓ Correcta" : "✗ Incorrecta";
     var correctLetter = "";
+    /** Bloquea la opción e identifica visualmente la elegida y la correcta. */
     card.querySelectorAll(".opt").forEach(function (lbl, k) {
       var o = +lbl.getAttribute("data-o");
       var inp = lbl.querySelector("input");
@@ -137,6 +171,7 @@
     ex.innerHTML = '<div class="head">' + (ok ? "Correcto." : "Incorrecto. La respuesta correcta es la " + correctLetter + ").") + "</div>" + (T.qs[i].e || "");
   }
 
+  /** Actualiza el progreso y los resultados por categoría; muestra la evaluación al completar el test. */
   function update() {
     var c = counts();
     document.getElementById("sDone").textContent = c.done;
@@ -144,6 +179,7 @@
     document.getElementById("sKo").textContent = c.ko;
     document.getElementById("fOk").style.width = (c.ok / N * 100) + "%";
     document.getElementById("fKo").style.width = (c.ko / N * 100) + "%";
+    /** Actualiza el marcador de categoría cuando su cabecera está presente. */
     c.perCat.forEach(function (pc, ci) {
       var el = document.getElementById("cs" + ci);
       if (el) el.textContent = pc.done ? pc.ok + "/" + pc.done + " aciertos" : "";
@@ -155,6 +191,7 @@
       var msg = pct >= 90 ? "Dominas el tema. Repasa solo lo que has fallado." : pct >= 70 ? "Buen nivel. Repite las falladas y repasa esas secciones en el resumen." : "Toca repasar el resumen y repetir las falladas.";
       var h = '<div class="result ' + cls + '"><h2>Resultado</h2><div class="big">' + c.ok + "/" + N + " · " + pct + "%</div><p>" + msg + "</p>";
       h += '<ul class="breakdown">';
+      /** Añade el total de aciertos de cada categoría al resultado final. */
       T.cats.forEach(function (cat, ci) { var pc = c.perCat[ci]; h += "<li><span>" + cat + "</span><b>" + pc.ok + "/" + pc.total + "</b></li>"; });
       h += "</ul>";
       if (c.ko) h += '<div class="toolbar" style="margin:16px 0 0"><button class="btn primary" id="bRetry2">Repetir las ' + c.ko + " falladas</button></div>";
@@ -168,10 +205,12 @@
     document.getElementById("bRetry").disabled = c.ko === 0;
   }
 
+  /** Filtra las preguntas según su respuesta y oculta las categorías sin preguntas visibles. */
   function applyFilter() {
     var f = st.filter || "all";
     document.querySelectorAll("[data-f]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-f") === f ? "true" : "false"); });
     var visible = 0;
+    /** Decide la visibilidad de la pregunta y cuenta las que cumplen el filtro. */
     document.querySelectorAll(".q").forEach(function (card) {
       var i = +card.getAttribute("data-i");
       var a = st.ans[i];
@@ -179,6 +218,7 @@
       card.hidden = !show;
       if (show) visible++;
     });
+    /** Oculta una categoría cuando ninguna de sus preguntas queda visible. */
     document.querySelectorAll("section.cat").forEach(function (sec) {
       sec.hidden = !sec.querySelector(".q:not([hidden])");
     });
@@ -187,7 +227,11 @@
     em.textContent = f === "wrong" ? "No tienes preguntas falladas." : f === "pending" ? "No te quedan preguntas pendientes." : "";
   }
 
+  // --- Repetición y controles ---
+
+  /** Elimina solo las respuestas incorrectas, renueva sus opciones y muestra las pendientes. */
   function retryWrong() {
+    /** Borra la respuesta fallida y genera un nuevo orden para sus opciones. */
     Object.keys(st.ans).forEach(function (k) {
       if (st.ans[k] !== cor(+k)) { delete st.ans[k]; st.perm[k] = freshPerm(+k); }
     });
@@ -197,8 +241,10 @@
   }
 
   var resetArmed = null;
+  /** Conecta respuestas, filtros, orden aleatorio y reinicio; este exige dos pulsaciones en cuatro segundos. */
   function wire() {
     app.querySelectorAll(".opt input").forEach(function (inp) {
+      /** Registra la primera respuesta y desplaza al resultado cuando se completa el test. */
       inp.addEventListener("change", function () {
         var i = +inp.name.slice(1);
         if (st.ans[i] !== undefined) return;
@@ -211,8 +257,10 @@
       });
     });
     app.querySelectorAll("[data-f]").forEach(function (b) {
+      /** Guarda el filtro elegido y actualiza las preguntas visibles. */
       b.addEventListener("click", function () { st.filter = b.getAttribute("data-f"); save(); applyFilter(); });
     });
+    /** Alterna la agrupación por categorías y el orden aleatorio, conservando las respuestas. */
     document.getElementById("bRandom").addEventListener("click", function () {
       st.random = !st.random;
       st.qorder = st.random ? shuffle(range(N)) : null;
@@ -220,9 +268,11 @@
     });
     document.getElementById("bRetry").addEventListener("click", retryWrong);
     var bReset = document.getElementById("bReset");
+    /** Pide una segunda pulsación y después borra respuestas, opciones y filtro del intento. */
     bReset.addEventListener("click", function () {
       if (!resetArmed) {
         bReset.textContent = "¿Seguro? Pulsa otra vez para borrar";
+        /** Restaura el botón y cancela la confirmación tras cuatro segundos. */
         resetArmed = setTimeout(function () { bReset.textContent = "Reiniciar test"; resetArmed = null; }, 4000);
         return;
       }

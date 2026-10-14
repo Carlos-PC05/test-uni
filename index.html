@@ -24,6 +24,7 @@
 </main>
 
 <script>
+// --- Catálogo de asignaturas y enlaces ---
 var SUBJECTS = [
   {
     id: "abd", initial: "ABD",
@@ -84,6 +85,7 @@ var SUBJECTS = [
   }
 ];
 
+/** Restaura las asignaturas desplegadas y construye el catálogo con el progreso local. */
 (function () {
   var OPEN_KEY = "tu-open";
   var store = window.TUStore;
@@ -92,6 +94,7 @@ var SUBJECTS = [
 
   var CHEV = '<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 
+  /** Genera el indicador HTML del progreso guardado; devuelve una cadena vacía si no hay respuestas. */
   function progress(testId) {
     var s = store.get("tu-sum:" + testId);
     if (!s || !s.done) return "";
@@ -100,7 +103,9 @@ var SUBJECTS = [
       s.done + "/" + s.total + " respondidas · " + s.ok + " aciertos</div>";
   }
 
+  // --- Presentación del catálogo ---
   var html = "";
+  /** Construye una asignatura con sus temas, enlaces e indicadores de progreso. */
   SUBJECTS.forEach(function (s) {
     var isOpen = openSet.indexOf(s.id) !== -1;
     html += '<section class="subject' + (isOpen ? " open" : "") + '" id="subj-' + s.id + '">';
@@ -108,10 +113,12 @@ var SUBJECTS = [
     html += '<span class="badge">' + s.initial + "</span>";
     html += '<span class="info"><span class="name">' + s.name + '</span><br><span class="meta">' + s.meta + "</span></span>" + CHEV + "</button>";
     html += '<div class="subject-body" id="body-' + s.id + '">';
+    /** Añade los enlaces del tema y los indicadores de sus tests. */
     s.temas.forEach(function (t) {
       html += '<div class="tema"><div class="t-name">' + t.name + '</div><div class="t-meta">' + t.meta + "</div>";
       var prog = "";
       html += '<div class="links">';
+      /** Añade el enlace y acumula su progreso si corresponde a un test. */
       t.links.forEach(function (l) {
         html += '<a class="btn' + (l.primary ? " primary" : "") + '" href="' + l.href + '">' + l.label + "</a>";
         if (l.test) prog += progress(l.test);
@@ -122,7 +129,9 @@ var SUBJECTS = [
   });
   document.getElementById("list").innerHTML = html;
 
+  // --- Persistencia de las asignaturas desplegadas ---
   document.querySelectorAll(".subject-head").forEach(function (btn) {
+    /** Alterna la asignatura, sincroniza aria-expanded y guarda las secciones abiertas. */
     btn.addEventListener("click", function () {
       var id = btn.getAttribute("data-id");
       var sec = document.getElementById("subj-" + id);
