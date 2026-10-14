@@ -3,6 +3,7 @@
    Modo claro/oscuro automático + botón para forzarlo.
    ========================================================== */
 
+/* ---------- Variables y temas ---------- */
 :root {
   --bg: #f6f7f9;
   --surface: #ffffff;
@@ -294,6 +295,7 @@ section.cat[hidden] { display: none; }
 .sol.show { display: block; }
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 
+/* ---------- Adaptación a pantallas pequeñas ---------- */
 @media (max-width: 600px) {
   .bloque, .q, .ex { padding: 16px; }
   .page-head { padding-top: 24px; }
@@ -304,6 +306,7 @@ section.cat[hidden] { display: none; }
   .toolbar .btn, .page-head .actions-row .btn { min-height: 38px; padding: 7px 12px; font-size: .88rem; }
 }
 
+/* ---------- Impresión ---------- */
 @media print {
   .topbar, .test-bar, .toc, .toolbar, .btnrow, .icon-btn { display: none !important; }
   body { background: #fff; color: #000; }

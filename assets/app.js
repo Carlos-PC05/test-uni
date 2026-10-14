@@ -1,12 +1,28 @@
 /* Tests de Universidad — utilidades comunes (tema claro/oscuro + barra superior).
    Se carga en <head> sin defer para aplicar el tema antes de pintar. */
+/** Aplica el tema antes del primer pintado y publica las utilidades compartidas. */
 (function () {
+  // --- Preferencia de tema ---
   var KEY = "tu-theme";
   var root = document.documentElement;
 
-  function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
-  function save(v) { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch (e) {} }
+  /** Lee la preferencia de tema; devuelve null si el almacenamiento no está disponible. */
+  function stored() {
+    try {
+      return localStorage.getItem(KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+  /** Guarda el tema o elimina la preferencia si el valor está vacío; tolera errores de almacenamiento. */
+  function save(v) {
+    try {
+      v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY);
+    } catch (e) {}
+  }
+  /** Indica si el navegador informa de una preferencia por el tema oscuro. */
   function systemDark() { return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches; }
+  /** Resuelve el tema explícito o, en su ausencia, la preferencia del sistema. */
   function current() { return root.getAttribute("data-theme") || (systemDark() ? "dark" : "light"); }
 
   var s = stored();
@@ -15,6 +31,7 @@
   var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
 
+  /** Actualiza el icono, la etiqueta accesible y el título del botón según el tema actual. */
   function paintBtn(btn) {
     var dark = current() === "dark";
     btn.innerHTML = dark ? SUN : MOON;
@@ -22,9 +39,15 @@
     btn.title = btn.getAttribute("aria-label");
   }
 
-  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  /** Escapa los caracteres especiales al insertar texto en el HTML de la barra superior. */
+  function esc(t) {
+    return String(t).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
 
   /* Prefijo hacia la raíz según la profundidad de la página (detrás de carpetas como ABD/). */
+  /** Obtiene la ruta a la raíz a partir del src de este script; usa una ruta vacía si falla. */
   var PREFIX = (function () {
     try {
       var src = (document.currentScript && document.currentScript.getAttribute("src")) || "";
@@ -32,6 +55,9 @@
     } catch (e) { return ""; }
   })();
 
+  // --- Navegación y cambio de tema ---
+
+  /** Inserta la barra superior salvo que la página declare data-no-topbar. */
   document.addEventListener("DOMContentLoaded", function () {
     var body = document.body;
     if (body.hasAttribute("data-no-topbar")) return;
@@ -47,6 +73,7 @@
     body.insertBefore(bar, body.firstChild);
     var btn = document.getElementById("themeBtn");
     paintBtn(btn);
+    /** Alterna el tema, guarda la preferencia y sincroniza el botón. */
     btn.addEventListener("click", function () {
       var next = current() === "dark" ? "light" : "dark";
       root.setAttribute("data-theme", next);
@@ -57,8 +84,11 @@
 
   /* Almacenamiento seguro reutilizable por el resto de scripts */
   window.TUStore = {
+    /** Lee un valor JSON; devuelve null si falta, es inválido o no se puede acceder. */
     get: function (k) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    /** Serializa y guarda un valor JSON; ignora errores de serialización o almacenamiento. */
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    /** Elimina una clave si el almacenamiento está disponible. */
     del: function (k) { try { localStorage.removeItem(k); } catch (e) {} }
   };
 })();
